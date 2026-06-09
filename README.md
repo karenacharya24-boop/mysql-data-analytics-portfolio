@@ -1,4 +1,4 @@
-# Tech Layoffs Data Cleaning Project (MySQL)
+# Company Layoffs Data Cleaning Project (MySQL)
 
 ## 📌 Project Overview
 This project targets the end-to-end data preparation and sanitation of a messy, raw global tech layoffs dataset using MySQL Workbench. The pipeline handles data structural issues, text inconsistencies, misplaced null fields, incorrect data types, and redundant entries to provide a highly clean data layer ready for exploratory analysis.
