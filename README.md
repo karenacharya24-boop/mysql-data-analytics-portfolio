@@ -1,44 +1,42 @@
-# Company Layoffs Data Cleaning Project (MySQL)
+# Global Company Layoffs End-to-End Pipeline (MySQL)
 
 ## 📌 Project Overview
-This project targets the end-to-end data preparation and sanitation of a messy, raw global tech layoffs dataset using MySQL Workbench. The pipeline handles data structural issues, text inconsistencies, misplaced null fields, incorrect data types, and redundant entries to provide a highly clean data layer ready for exploratory analysis.
+This project delivers a complete, end-to-end data pipeline on a global tech layoffs dataset using MySQL Workbench. The workflow is divided into two major phases: **Phase 1: Data Cleaning**, where raw, messy source data is systematically sanitized and standardized, and **Phase 2: Exploratory Data Analysis (EDA)**, where advanced SQL queries are executed to extract actionable business insights from the pristine data layer.
+
+---
 
 ## 🛠️ Tech Stack & SQL Concepts Used
-- **Database Tool:** MySQL Workbench
-- **Core Techniques:**
-  - Database Staging Tables (`CREATE TABLE ... LIKE`)
-  - Duplicate Excision via Window Functions (`ROW_NUMBER()` & `PARTITION BY`)
-  - Target Text Stripping & Normalization (`TRIM()`, `TRAILING '.'`)
-  - Date Schema Transformation (`STR_TO_DATE()` & `ALTER TABLE ... MODIFY`)
-  - Cross-Record Missing Value Imputation via Multi-Table **Self-Joins**
+- **Database Engine:** MySQL Workbench
+- **Data Pipeline Phase 1 (Cleaning):** Staging Tables (`LIKE`), Window Functions (`ROW_NUMBER()` & `PARTITION BY`), String Manipulation (`TRIM()`, `TRAILING`), Date Conversion (`STR_TO_DATE()`), and Missing Value Imputation via Multi-Table **Self-Joins**.
+- **Data Pipeline Phase 2 (Analysis):** Aggregate Groupings (`GROUP BY`, `SUM`, `AVG`), Multi-Variable Order Tracing, Substrings, CTEs, and Chronological **Rolling Sum Window Functions** (`OVER(ORDER BY)`).
+
+---
 
 ## 🗂️ Project Structure
 - `layoffs.csv` - The original uncleaned data source.
-- `Data Cleaning.sql` - Fully documented MySQL workflow script.
+- `Data Cleaning.sql` - Phase 1 script focused on data architecture sanitation.
 - `Clean Data.csv` - The final pristine target table ready for visualization dashboards.
+- `Exploratory Data Analysis.sql` - Phase 2 script focused on business trend extraction.
 
-## 🧼 Step-by-Step Data Cleaning Workflow
+---
 
-### 1. Creating a Staging Architecture
-To guard against raw data corruption, a secondary staging table structure was instantiated (`layoffs_staging`), which was later converted into a finalized staging table (`layoffs_staging2`) containing an evaluated row count row matrix.
+## 🧼 Phase 1: Data Cleaning Workflow
 
-### 2. Identifying and Removing Duplicates
-- Wrote a Common Table Expression (CTE) utilizing `ROW_NUMBER() OVER(PARTITION BY...)` evaluating all unique attribute intersections to identify duplicate rows.
-- Filtered structural layers where the tracking matrix index exceeded 1 and cleanly removed the target duplicates via `DELETE` statements.
+1. **Staging Architecture:** Created a secondary staging environment (`layoffs_staging2`) to preserve raw data assets and safely test mutations.
+2. **Duplicate Removal:** Implemented a Common Table Expression (CTE) using `ROW_NUMBER() OVER(PARTITION BY...)` across all columns to isolate and drop duplicate rows.
+3. **Text Standardization:** Applied `TRIM()` to remove blank spaces, unified inconsistent names (like collapsing variants into a clean "Crypto" tag), and stripped trailing punctuation from location entries.
+4. **Data Type Correction:** Converted string dates into proper database formats using `STR_TO_DATE()` and permanently altered the column schema to a native `DATE` type.
+5. **Null Imputation:** Structured an inner **Self-Join** on matching company profiles to automatically identify and fill blank fields in the `industry` column.
+6. **Data Purging:** Removed entirely uninformative rows containing double-null metrics and dropped helper columns to finalize the pristine table layer.
 
-### 3. Standardizing Inconsistent Text fields
-- Cleaned leading and trailing blank whitespaces out of company fields via `TRIM()`.
-- Used wildcard pattern matching (`LIKE 'Crypto%'`) to collapse multiple naming variants into a unified `"Crypto"` tag.
-- Stripped trailing syntax errors from geographical entities (e.g., changing `"United States."` to `"United States"` using `TRIM(TRAILING '.' FROM country)`).
+---
 
-### 4. Correcting Structural Data Types
-- Parsed string-based timeline dates into native database standard fields using `STR_TO_DATE(date, '%m/%d/%Y')`.
-- Modified table schema definitions permanently by executing `ALTER TABLE ... MODIFY COLUMN date DATE`.
+## 📈 Phase 2: Exploratory Data Analysis (EDA)
 
-### 5. Populating Null Values via Self-Joins
-- Located missing records inside the `industry` column.
-- Wrote a cross-referential update statement using an inner **Self-Join** on matching `company` and `location` entries to fill blank data points with valid, adjacent record attributes.
+With a completely sanitized database layer, I designed a series of high-impact queries to investigate global layoff behaviors, analyzing trends across companies, industries, timelines, and business funding structures:
 
-### 6. Purging Irrelevant Data Row Architectures
-- Removed obsolete, unusable rows where both `total_laid_off` and `percentage_laid_off` were completely null.
-- Dropped the auxiliary `row_num` column using `ALTER TABLE ... DROP COLUMN` to keep the final output optimized.
+1. **Volume Extremes:** Isolated the maximum single-day layoffs and targeted companies that shut down completely (100% layoffs) to benchmark the scale of industry events.
+2. **Impact Groupings:** Aggregated total workforce reductions grouped by Company, Industry, Country, and Stage to discover exactly which market segments bore the largest losses.
+3. **Chronological Spikes:** Extracted and grouped database timelines by months and calendar years to map exactly when job changes peaked globally.
+4. **Multi-Year Rolling Totals:** Built a complex query using a CTE and a **Rolling Sum Window Function** to generate a continuous month-by-month cumulative timeline tracking global layoff speed over time.
+5. **Top Corporate Redundancies:** Developed dense ranking logic to identify the top companies per individual year based on their aggregate employee cuts.
