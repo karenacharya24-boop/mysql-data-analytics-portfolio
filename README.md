@@ -20,7 +20,7 @@ This project delivers a complete, end-to-end data pipeline on a global tech layo
 
 ---
 
-## 🧼 Phase 1: Data Cleaning Workflow
+## 🧼 Project 1: Data Cleaning Workflow
 
 1. **Staging Architecture:** Created a secondary staging environment (`layoffs_staging2`) to preserve raw data assets and safely test mutations.
 2. **Duplicate Removal:** Implemented a Common Table Expression (CTE) using `ROW_NUMBER() OVER(PARTITION BY...)` across all columns to isolate and drop duplicate rows.
@@ -31,7 +31,7 @@ This project delivers a complete, end-to-end data pipeline on a global tech layo
 
 ---
 
-## 📈 Phase 2: Exploratory Data Analysis (EDA)
+## 📈 Project 2: Exploratory Data Analysis (EDA)
 
 With a completely sanitized database layer, I designed a series of high-impact queries to investigate global layoff behaviors, analyzing trends across companies, industries, timelines, and business funding structures:
 
